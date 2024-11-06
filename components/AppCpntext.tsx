@@ -11,7 +11,8 @@ import {
 } from "react";
 
 type StateType = {
-  displayNavigation: boolean;
+  displayNavigation: boolean; //显示导航栏
+  themeMode: "light" | "dark"; //主题模式
 };
 interface IAppContextProps {
   state: StateType;
@@ -29,6 +30,7 @@ export default function AppContextProvider({
 }) {
   const [state, setState] = useState<StateType>({
     displayNavigation: true,
+    themeMode: "light",
   });
   const conttextValue = useMemo(() => {
     return {
