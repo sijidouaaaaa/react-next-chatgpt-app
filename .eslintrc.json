@@ -1,4 +1,10 @@
 {
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
   "extends": [
     "next/core-web-vitals",
     "plugin:react/recommended",
@@ -7,25 +13,18 @@
     "prettier"
   ],
   "plugins": ["react", "prettier"],
-  "rules": {
-    "prettier/prettier": "error",
-    "react/react-in-jsx-scope": "off",
-    "react/display-name": "off"
-  },
+  "rules": {},
   "settings": {
     "react": {
       "version": "detect"
     }
   },
-  "env": {
-    "browser": true,
-    "es6": true
-  },
+
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
     },
-    "ecmaVersion": 2020,
+    "ecmaVersion": "latest",
     "sourceType": "module"
   }
 }
