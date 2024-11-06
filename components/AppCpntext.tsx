@@ -1,13 +1,13 @@
 "use client"; //客户端
 
+import { Action, initialState, reducer } from "@/reducers/AppReducer";
 import {
   createContext,
   Dispatch,
   ReactNode,
-  SetStateAction,
   useContext,
   useMemo,
-  useState,
+  useReducer,
 } from "react";
 
 type StateType = {
@@ -16,7 +16,7 @@ type StateType = {
 };
 interface IAppContextProps {
   state: StateType;
-  setState: Dispatch<SetStateAction<StateType>>;
+  dispatch: Dispatch<Action>;
 }
 
 const AppContext = createContext<IAppContextProps>(null!);
@@ -28,16 +28,13 @@ export default function AppContextProvider({
 }: {
   children: ReactNode;
 }) {
-  const [state, setState] = useState<StateType>({
-    displayNavigation: true,
-    themeMode: "light",
-  });
+  const [state, dispatch] = useReducer(reducer, initialState);
   const conttextValue = useMemo(() => {
     return {
       state,
-      setState,
+      dispatch,
     };
-  }, [state]);
+  }, [state, dispatch]);
   return (
     <AppContext.Provider value={conttextValue}>{children}</AppContext.Provider>
   );
