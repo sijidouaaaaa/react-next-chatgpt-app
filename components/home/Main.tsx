@@ -1,11 +1,9 @@
-interface IMainProps{
-    counter: number
-}
-export default function  Main(props:IMainProps){
-    const {counter} = props
+
+export default function  Main(){
+
   return (
-    <main>
-      <h1>主体内容:{counter}</h1>
+    <main className="flex-1 bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">
+     主体内容
     </main>
   )
 } 

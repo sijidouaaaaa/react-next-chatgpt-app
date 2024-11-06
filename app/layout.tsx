@@ -14,7 +14,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className='bg-green-500 p-10'>{children}</body>
+      <body 
+      className='dark' //手动切换系统颜色 dark
+      >{children}</body>
     </html>
   )
 }
