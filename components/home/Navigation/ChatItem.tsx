@@ -1,10 +1,10 @@
 import Button from "@/components/common/Button";
 import { Chat } from "@/types/chat";
-import { log } from "console";
-import { use, useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
-import { MdCake, MdCheck, MdClose, MdDeleteOutline } from "react-icons/md";
-import { PiCableCar, PiChatBold, PiTrashBold } from "react-icons/pi";
+import { MdCheck, MdClose, MdDeleteOutline } from "react-icons/md";
+import { PiChatBold, PiTrashBold } from "react-icons/pi";
 type IChatItemProps = {
   item: Chat;
   isSelected: boolean;
