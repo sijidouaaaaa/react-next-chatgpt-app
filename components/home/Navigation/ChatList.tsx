@@ -1,7 +1,7 @@
 import { groupByDate } from "@/common/util";
 import { Chat } from "@/types/chat";
 import { useMemo, useState } from "react";
-import { PiCableCar, PiChatBold } from "react-icons/pi";
+import ChatItem from "./ChatItem";
 
 export default function ChatList() {
   const [chatList, setChatList] = useState<Chat[]>([
@@ -87,29 +87,15 @@ export default function ChatList() {
               {date}
             </div>
             <ul>
-              {list.map((chat) => {
-                const isSelected = selectedChat?.id === chat.id;
+              {list.map((item) => {
+                const isSelected = selectedChat?.id === item.id;
                 return (
-                  <li
-                    key={chat.id}
-                    onClick={() => setSelectedChat(chat)}
-                    className={`group flex items-center p-3 space-x-3 cursor-pointer rounded-md hover:bg-gray-800 ${
-                      isSelected ? "bg-gray-800" : ""
-                    }`}
-                  >
-                    <div>
-                      <PiChatBold />
-                    </div>
-                    <div className="relative flex-1 whitespace-nowrap overflow-hidden">
-                      {chat.title}
-                      {/* 固定在标题右边 */}
-                      <span
-                        className={`group-hover:from-gray-800 absolute right-0 inset-y-0 w-8  bg-gradient-to-l ${
-                          isSelected ? "from-gray-800" : "from-gray-900"
-                        }`}
-                      ></span>
-                    </div>
-                  </li>
+                  <ChatItem
+                    key={item.id}
+                    isSelected={isSelected}
+                    item={item}
+                    onSelected={(chat) => setSelectedChat(chat)}
+                  />
                 );
               })}
             </ul>
