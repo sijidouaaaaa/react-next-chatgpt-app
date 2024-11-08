@@ -13,6 +13,7 @@ import {
 type StateType = {
   displayNavigation: boolean; //显示导航栏
   themeMode: "light" | "dark"; //主题模式
+  currentModel: string;
 };
 interface IAppContextProps {
   state: StateType;

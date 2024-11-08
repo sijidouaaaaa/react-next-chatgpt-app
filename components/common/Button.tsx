@@ -1,40 +1,30 @@
-import { ComponentPropsWithRef } from 'react';
-import { IconType } from 'react-icons';
-
-interface IButtonProps extends ComponentPropsWithRef<'button'> {
+import { ComponentPropsWithoutRef } from "react";
+import { IconType } from "react-icons";
+type ButtonProps = {
   icon?: IconType;
-  variant?: 'default' | 'outline' | 'text';
-}
-
+  variant?: "default" | "outline" | "text";
+} & ComponentPropsWithoutRef<"button">;
 export default function Button({
   children,
-  className = '',
+  className = "",
   icon: Icon,
-  variant = 'default',
+  variant = "default",
   ...props
-}: IButtonProps) {
-  const getVariantClass = (variant: 'default' | 'outline' | 'text') => {
-    switch (variant) {
-      case 'default':
-        return `text-black dark:text-gray-300 bg-gray-50 hover:bg-gray-200
-dark:bg-gray-700 dark:hover:bg-gray-900`;
-      case 'outline':
-        return `border border-gray-300 dark:border-gray-600 text-black dark:text-gray-300
-bg-gray-50 hover:bo-gray200 dark:bg-gray-800 dark:hover:bg-gray-700`;
-      case 'text':
-        return `text-black dark:text-gray-300 bg-transparent hover:bg-gray-200
-dark:hover:bg-gray-700`;
-      default:
-        return '';
-    }
-  };
-
+}: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center w-[38px] min-h-[38px] rounded px-3 py-1 ${getVariantClass(variant)} ${className}`}
+      className={`inline-flex items-center min-w-[38px] min-h-[38px] rounded px-3 py-1.5
+            ${
+              variant === "default"
+                ? "text-black dark:text-gray-300 bg-gray-50 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-900"
+                : variant === "outline"
+                  ? "border border-gray-300 dark:border-gray-600 text-black dark:text-gray-300 bg-gray-50 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+                  : "text-black dark:text-gray-300 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700"
+            }
+            ${className}`}
       {...props}
     >
-      {Icon && <Icon className={`text-lg ${children ? 'ml-1' : ''}'`} />}
+      {Icon && <Icon className={`text-lg ${children ? "mr-1" : ""}`} />}
       {children}
     </button>
   );

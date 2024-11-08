@@ -20,11 +20,7 @@ export default function ChatList() {
       title: "chat1",
       updateTime: Date.now() + 2,
     },
-    {
-      id: "1",
-      title: "chat1文字类型的数据说话还有话好好的",
-      updateTime: Date.now() + 3,
-    },
+
     {
       id: "25",
       title: "chat1",
