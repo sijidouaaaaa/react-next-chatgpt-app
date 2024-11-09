@@ -1,6 +1,7 @@
 "use client"; //客户端
 
 import { Action, initialState, reducer } from "@/reducers/AppReducer";
+import { MessageListItem } from "@/types/chat";
 import {
   createContext,
   Dispatch,
@@ -14,6 +15,8 @@ type StateType = {
   displayNavigation: boolean; //显示导航栏
   themeMode: "light" | "dark"; //主题模式
   currentModel: string;
+  messageList: MessageListItem[];
+  streamingId: string;
 };
 interface IAppContextProps {
   state: StateType;

@@ -9,3 +9,8 @@ export interface MessageListItem {
   role: "user" | "assistant";
   content: string;
 }
+
+export interface MessageRequestBody {
+  messages: MessageListItem[];
+  model: string;
+}
