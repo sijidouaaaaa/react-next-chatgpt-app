@@ -4,21 +4,22 @@ import { ActionType } from "@/reducers/AppReducer";
 import { MessageListItem, MessageRequestBody } from "@/types/chat";
 import { send } from "process";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FiSend } from "react-icons/fi";
 import { MdRefresh } from "react-icons/md";
-import { PiLightningFill } from "react-icons/pi";
+import { PiLightningFill, PiStopBold } from "react-icons/pi";
 import TextareaAutoSize from "react-textarea-autosize";
 import { v4 as uuidv4 } from "uuid";
 export default function ChatInput() {
   const [messageText, setMessageText] = useState(""); // 输入框内容
   // 获取当前聊天记录
   const {
-    state: { messageList, currentModel },
+    state: { messageList, currentModel, streamingId },
     dispatch,
   } = useAppContext();
 
-  const senhdMessage = async () => {
+  const stopRef = useRef(false);
+  const senhdMessage = () => {
     const message: MessageListItem = {
       content: messageText,
       id: uuidv4(),
@@ -26,17 +27,43 @@ export default function ChatInput() {
     };
     // 当前消息和历史消息链接一起
     const messages = messageList.concat([message]);
+    dispatch({ type: ActionType.ADD_MESSAGE, message });
+    doMessage(messages);
+  };
 
+  const reSend = () => {
+    const messages = [...messageList];
+    // 判断最后一条消息是否是回复消息
+    if (
+      messages.length !== 0 &&
+      messages[messages.length - 1].role === "assistant"
+    ) {
+      dispatch({
+        type: ActionType.REMOVE_MESSAGE,
+        message: messages[messages.length - 1],
+      });
+      messages.splice(messages.length - 1, 1);
+    }
+    doMessage(messages);
+  };
+
+  /**
+   * 发送消息
+   */
+  const doMessage = async (messages: MessageListItem[]) => {
     const body: MessageRequestBody = { messages, model: currentModel };
     //当前消息 添加到消息列表
-    dispatch({ type: ActionType.ADD_MESSAGE, message });
+
     setMessageText("");
+
+    const controller = new AbortController();
 
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      signal: controller.signal, //通过控制器取消请求
       body: JSON.stringify(body),
     });
     // 判断状态码是否正常
@@ -74,6 +101,15 @@ export default function ChatInput() {
     let done = false;
     let content = "";
     while (!done) {
+      // 停止生成内容
+      if (stopRef.current) {
+        // 重置标识位
+        stopRef.current = false;
+        // 终止网络请求
+        controller.abort();
+        break;
+      }
+
       const request = await reader.read();
       done = request.done;
       const chunk = decoder.decode(request.value);
@@ -83,7 +119,7 @@ export default function ChatInput() {
         message: { ...responseMessage, content },
       });
     }
-    // 读取流结束，将当前消息的id清空 
+    // 读取流结束，将当前消息的id清空
     dispatch({
       type: ActionType.UPDATA,
       field: "streamingId",
@@ -99,9 +135,28 @@ export default function ChatInput() {
      pt-10 dark:from-[rgba(53,55,64,0)] dark:to-[#353740] dark:to-[58.85%]"
     >
       <div className="w-full max-w-4xl mx-auto flex flex-col items-center px-4 space-y-4">
-        <Button icon={MdRefresh} variant="primary" className="font-medium">
-          重新生成
-        </Button>
+        {messageList.length !== 0 &&
+          (streamingId !== "" ? (
+            <Button
+              icon={PiStopBold}
+              variant="primary"
+              className="font-medium"
+              onClick={() => {
+                stopRef.current = true;
+              }}
+            >
+              停止生成
+            </Button>
+          ) : (
+            <Button
+              icon={MdRefresh}
+              variant="primary"
+              className="font-medium"
+              onClick={reSend}
+            >
+              重新生成
+            </Button>
+          ))}
         <div
           className="flex items-end w-full border border-black/10 
          dark:border-gray-800/50 bg-white dark:bg-gray-700 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0,1)] py-4"
@@ -121,6 +176,7 @@ export default function ChatInput() {
             icon={FiSend}
             variant="primary"
             onClick={senhdMessage}
+            disabled={messageText.trim() === "" || streamingId !== ""}
           />
         </div>{" "}
         <footer className="text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-6">
