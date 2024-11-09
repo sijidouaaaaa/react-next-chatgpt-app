@@ -14,16 +14,14 @@ function Markdown({ children, className = "", ...props }: Options) {
             <SyntaxHighlighter
               style={a11yDark}
               language={match?.[1] ?? ""}
-              PreTag="pre" // 修改这里
+              PreTag="div" // 修改这里
             >
               {String(children).replace(/\n$/, "")}
             </SyntaxHighlighter>
           ) : (
-            <pre>
-              <code {...props} className={className}>
-                {children}
-              </code>
-            </pre>
+            <code {...props} className={className}>
+              <div> {children}</div>
+            </code>
           );
         },
       }}
