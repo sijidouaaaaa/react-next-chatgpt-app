@@ -1,7 +1,7 @@
 import { HiPlus } from "react-icons/hi";
 import Button from "../../common/Button";
 import { LuPanelLeft } from "react-icons/lu";
-import { useAppContext } from "@/components/AppCpntext";
+import { useAppContext } from "@/components/AppContext";
 import { ActionType } from "@/reducers/AppReducer";
 
 export default function Menubar() {

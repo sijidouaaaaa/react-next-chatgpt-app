@@ -7,64 +7,78 @@ export default function ChatList() {
   const [chatList, setChatList] = useState<Chat[]>([
     {
       id: "1",
-      title: "chat1文字类型的数据说话还有话好好的",
+      title: "React入门实战教程",
       updateTime: Date.now(),
     },
     {
       id: "2",
-      title: "chat1",
-      updateTime: Date.now() + 1,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "3",
-      title: "chat1",
-      updateTime: Date.now() + 2,
-    },
-
-    {
-      id: "25",
-      title: "chat1",
-      updateTime: Date.now() + 4,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
-      id: "21",
-      title: "chat1",
-      updateTime: Date.now() + 5,
+      id: "4",
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
+    },
+    {
+      id: "5",
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
+    },
+    {
+      id: "6",
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
+    },
+    {
+      id: "7",
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
+    },
+    {
+      id: "8",
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
+    },
+    {
+      id: "9",
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
+    },
+    {
+      id: "10",
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
+    },
+    {
+      id: "11",
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "12",
-      title: "chat1",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 4,
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
-      id: "41",
-      title: "chat1",
+      id: "13",
+      title: "如何使用Next.js创建React项目",
+      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
+    },
+    {
+      id: "14",
+      title: "如何使用Next.js创建React项目",
       updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
     {
       id: "15",
-      title: "chat1",
-      updateTime: Date.now() + 4,
-    },
-    {
-      id: "17",
-      title: "chat1",
-      updateTime: Date.now() + 5,
-    },
-    {
-      id: "13",
-      title: "chat1",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 4,
-    },
-    {
-      id: "14",
-      title: "chat1",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "16",
-      title: "chat1",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
+      title: "知行小课",
+      updateTime: Date.now() + 2,
     },
   ]);
   // 判断是否是当前选中的对话

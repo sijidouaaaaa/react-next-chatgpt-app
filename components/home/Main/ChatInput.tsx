@@ -1,4 +1,4 @@
-import { useAppContext } from "@/components/AppCpntext";
+import { useAppContext } from "@/components/AppContext";
 import Button from "@/components/common/Button";
 import { ActionType } from "@/reducers/AppReducer";
 import { MessageListItem, MessageRequestBody } from "@/types/chat";
@@ -21,6 +21,8 @@ export default function ChatInput() {
   const chatIdRef = useRef("");
   // 创建或更新消息
   async function createOrUpdateMessage(message: MessageListItem) {
+    console.log("createOrUpdateMessage", message);
+
     const response = await fetch("/api/message/update", {
       method: "POST",
       headers: {
@@ -33,15 +35,14 @@ export default function ChatInput() {
       return;
     }
     const { data } = await response.json();
-
     return data.message;
   }
   const sendMessage = async () => {
     const message = await createOrUpdateMessage({
-      content: messageText,
-      id: "", //服务端生成
+      id: "",
       role: "user",
-      chatId: chatIdRef.current,
+      content: messageText,
+      chatId: "",
     });
     dispatch({ type: ActionType.ADD_MESSAGE, message });
     // 当前消息和历史消息链接一起
@@ -50,7 +51,7 @@ export default function ChatInput() {
     doSendMessage(messages);
   };
 
-  const reSend = () => {
+  const resend = () => {
     const messages = [...messageList];
     // 判断最后一条消息是否是回复消息
     if (
@@ -96,12 +97,12 @@ export default function ChatInput() {
       return;
     }
 
-    const responseMessage: MessageListItem = await createOrUpdateMessage({
-      id: "",
+    const responseMessage: MessageListItem = {
+      id: uuidv4(),
       role: "assistant",
       content: "",
       chatId: chatIdRef.current,
-    });
+    };
 
     if (!responseMessage) {
       controller.abort();
@@ -174,7 +175,7 @@ export default function ChatInput() {
               icon={MdRefresh}
               variant="primary"
               className="font-medium"
-              onClick={() => reSend()}
+              onClick={() => resend()}
             >
               重新生成
             </Button>

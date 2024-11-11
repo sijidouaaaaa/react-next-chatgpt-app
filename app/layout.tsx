@@ -1,4 +1,4 @@
-import AppContextProvider from "@/components/AppCpntext";
+import AppContextProvider from "@/components/AppContext";
 import "@/styles/globals.css";
 import "@/styles/markdown.css";
 import type { Metadata } from "next";

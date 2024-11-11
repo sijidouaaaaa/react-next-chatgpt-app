@@ -14,7 +14,7 @@ export enum ActionType {
   UPDATA_MESSAGE = "UPDATA_MESSAGE",
   REMOVE_MESSAGE = "REMOVE_MESSAGE",
 }
-type AddMessageAction = {
+type MessageAction = {
   type:
     | ActionType.ADD_MESSAGE
     | ActionType.UPDATA_MESSAGE
@@ -28,7 +28,7 @@ type UpdateAction = {
   value: any;
 };
 
-export type Action = UpdateAction | AddMessageAction;
+export type Action = UpdateAction | MessageAction;
 
 export const initialState: StateType = {
   displayNavigation: true,
@@ -76,6 +76,6 @@ export function reducer(state: StateType, action: Action): StateType {
       };
     }
     default:
-      throw new Error("unknown action");
+      throw Error("unknown action");
   }
 }

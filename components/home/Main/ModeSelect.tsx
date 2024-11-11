@@ -1,4 +1,4 @@
-import { useAppContext } from "@/components/AppCpntext";
+import { useAppContext } from "@/components/AppContext";
 import Button from "@/components/common/Button";
 import { ActionType } from "@/reducers/AppReducer";
 import { useContext } from "react";

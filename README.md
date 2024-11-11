@@ -74,3 +74,5 @@ npm i @prisma/client
 <!-- 运行项目 -->
 
 npx prisma generate
+
+npx prisma studio

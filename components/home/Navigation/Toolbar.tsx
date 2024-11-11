@@ -1,6 +1,6 @@
 import Button from "../../common/Button";
 
-import { useAppContext } from "@/components/AppCpntext";
+import { useAppContext } from "@/components/AppContext";
 import { MdDarkMode, MdInfo, MdLightMode } from "react-icons/md";
 import { ActionType } from "@/reducers/AppReducer";
 

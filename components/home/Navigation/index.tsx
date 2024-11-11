@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppContext } from "@/components/AppCpntext";
+import { useAppContext } from "@/components/AppContext";
 import Menubar from "./Menubar";
 import Toolbar from "./Toolbar";
 import ChatList from "./ChatList";
