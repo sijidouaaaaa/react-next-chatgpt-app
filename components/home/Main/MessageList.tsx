@@ -6,12 +6,12 @@ export default function MessageList() {
   const {
     state: { messageList, streamingId },
   } = useAppContext();
-  console.log("messageList", messageList);
 
   return (
     <div className="w-full pt-10 pb-48 dark:text-gray-300">
       <ul>
-        {messageList && messageList.length > 0 ? (
+        {messageList &&
+          messageList.length > 0 &&
           messageList.map((message) => {
             const isUser = message?.role === "user";
             return (
@@ -34,10 +34,7 @@ export default function MessageList() {
                 </div>
               </li>
             );
-          })
-        ) : (
-          <p>No messages available.</p>
-        )}
+          })}
       </ul>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useAppContext } from "@/components/AppContext";
 import Button from "@/components/common/Button";
+import { useEventBusContext } from "@/components/EventBusContext";
 import { ActionType } from "@/reducers/AppReducer";
 import { MessageListItem, MessageRequestBody } from "@/types/chat";
 
@@ -8,7 +9,7 @@ import { FiSend } from "react-icons/fi";
 import { MdRefresh } from "react-icons/md";
 import { PiLightningFill, PiStopBold } from "react-icons/pi";
 import TextareaAutoSize from "react-textarea-autosize";
-import { v4 as uuidv4 } from "uuid";
+
 export default function ChatInput() {
   const [messageText, setMessageText] = useState(""); // 输入框内容
   // 获取当前聊天记录
@@ -19,10 +20,10 @@ export default function ChatInput() {
 
   const stopRef = useRef(false);
   const chatIdRef = useRef("");
+
+  const { publish } = useEventBusContext();
   // 创建或更新消息
   async function createOrUpdateMessage(message: MessageListItem) {
-    console.log("createOrUpdateMessage", message);
-
     const response = await fetch("/api/message/update", {
       method: "POST",
       headers: {
@@ -35,14 +36,35 @@ export default function ChatInput() {
       return;
     }
     const { data } = await response.json();
+    // 更新对话id的时候发布事件
+    if (!chatIdRef.current) {
+      chatIdRef.current = data.message.chatId;
+      publish("fetchChatList");
+    }
     return data.message;
+  }
+  // 删除消息(重新生成消息的时候)
+  async function delectMessage(id: string) {
+    const response = await fetch(`/api/message/delect?id${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      console.log(response.statusText);
+      return;
+    }
+    const { code } = await response.json();
+    // 删除成功
+    return code === 0;
   }
   const sendMessage = async () => {
     const message = await createOrUpdateMessage({
       id: "",
       role: "user",
       content: messageText,
-      chatId: "",
+      chatId: chatIdRef.current,
     });
     dispatch({ type: ActionType.ADD_MESSAGE, message });
     // 当前消息和历史消息链接一起
@@ -51,13 +73,19 @@ export default function ChatInput() {
     doSendMessage(messages);
   };
 
-  const resend = () => {
+  const resend = async () => {
     const messages = [...messageList];
     // 判断最后一条消息是否是回复消息
     if (
       messages.length !== 0 &&
       messages[messages.length - 1].role === "assistant"
     ) {
+      // 删除服务端消息
+      const result = await delectMessage(messages[messages.length - 1].id);
+      if (!result) {
+        console.log("delete message error");
+        return;
+      }
       dispatch({
         type: ActionType.REMOVE_MESSAGE,
         message: messages[messages.length - 1],
@@ -97,13 +125,12 @@ export default function ChatInput() {
       return;
     }
 
-    const responseMessage: MessageListItem = {
-      id: uuidv4(),
+    const responseMessage: MessageListItem = await createOrUpdateMessage({
+      id: "",
       role: "assistant",
       content: "",
       chatId: chatIdRef.current,
-    };
-
+    });
     if (!responseMessage) {
       controller.abort();
       return;
@@ -142,6 +169,8 @@ export default function ChatInput() {
         message: { ...responseMessage, content },
       });
     }
+    // 更新消息
+    createOrUpdateMessage({ ...responseMessage, content });
     // 读取流结束，将当前消息的id清空
     dispatch({
       type: ActionType.UPDATA,

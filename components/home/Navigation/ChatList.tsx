@@ -1,7 +1,8 @@
 import { groupByDate } from "@/common/util";
 import { Chat } from "@/types/chat";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ChatItem from "./ChatItem";
+import { useEventBusContext } from "@/components/EventBusContext";
 
 export default function ChatList() {
   const [chatList, setChatList] = useState<Chat[]>([
@@ -82,6 +83,18 @@ export default function ChatList() {
   const groupList = useMemo(() => {
     return groupByDate(chatList);
   }, [chatList]);
+
+  // 监听事件
+  const { subscribe, unsubscribe } = useEventBusContext();
+
+  useEffect(() => {
+    const callback: EventListener = () => {
+      console.log("fetchChatList");
+    };
+    subscribe("fetchChatList", callback);
+    // 卸载
+    return () => unsubscribe("fetchChatList", callback);
+  }, []);
 
   return (
     <div className="flex-1 mb-[48px] mt-2 flex flex-col overflow-y-auto">
