@@ -35,3 +35,42 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 react-markdown 插件
 remark-gfm 插件支持更多语法
 react-syntax-highlighter 代码高亮
+
+prisma 把消息数据保存到数据库中
+https://www.prisma.io/
+
+<!-- 安装中开发中 -->
+
+npm install prisma --save-dev
+
+<!-- 初始化 -->
+
+npx prisma init
+
+<!-- 安装prisma插件  -->
+
+<!-- 定义模型 -->
+
+<!-- 根据命令生成数据库跟表 -->
+
+npx prisma migrate dev --name init
+
+<!-- 查看数据文件命令 -->
+
+sqlite3 prisma/chatgpt-app.sqlite
+
+<!-- 查看表 -->
+
+.table
+
+<!-- 查看表结构 -->
+
+.schema Chat
+
+<!--js中真正操作的库  生成 prisma client -->
+
+npm i @prisma/client
+
+<!-- 运行项目 -->
+
+npx prisma generate

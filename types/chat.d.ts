@@ -8,6 +8,7 @@ export interface MessageListItem {
   id: string;
   role: "user" | "assistant";
   content: string;
+  chatId: string;
 }
 
 export interface MessageRequestBody {

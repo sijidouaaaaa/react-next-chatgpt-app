@@ -68,7 +68,7 @@ export default function ChatList() {
     },
   ]);
   // 判断是否是当前选中的对话
-  const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+  const [selectedChat, setSelectedChat] = useState<Chat>();
 
   const groupList = useMemo(() => {
     return groupByDate(chatList);

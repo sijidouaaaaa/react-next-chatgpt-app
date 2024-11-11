@@ -2,7 +2,6 @@ import { useAppContext } from "@/components/AppCpntext";
 import Button from "@/components/common/Button";
 import { ActionType } from "@/reducers/AppReducer";
 import { MessageListItem, MessageRequestBody } from "@/types/chat";
-import { send } from "process";
 
 import { useRef, useState } from "react";
 import { FiSend } from "react-icons/fi";
@@ -19,16 +18,36 @@ export default function ChatInput() {
   } = useAppContext();
 
   const stopRef = useRef(false);
-  const senhdMessage = () => {
-    const message: MessageListItem = {
+  const chatIdRef = useRef("");
+  // 创建或更新消息
+  async function createOrUpdateMessage(message: MessageListItem) {
+    const response = await fetch("/api/message/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
+    if (!response.ok) {
+      console.log(response.statusText);
+      return;
+    }
+    const { data } = await response.json();
+
+    return data.message;
+  }
+  const sendMessage = async () => {
+    const message = await createOrUpdateMessage({
       content: messageText,
-      id: uuidv4(),
+      id: "", //服务端生成
       role: "user",
-    };
+      chatId: chatIdRef.current,
+    });
+    dispatch({ type: ActionType.ADD_MESSAGE, message });
     // 当前消息和历史消息链接一起
     const messages = messageList.concat([message]);
-    dispatch({ type: ActionType.ADD_MESSAGE, message });
-    doMessage(messages);
+
+    doSendMessage(messages);
   };
 
   const reSend = () => {
@@ -44,15 +63,15 @@ export default function ChatInput() {
       });
       messages.splice(messages.length - 1, 1);
     }
-    doMessage(messages);
+    doSendMessage(messages);
   };
 
   /**
    * 发送消息
    */
-  const doMessage = async (messages: MessageListItem[]) => {
+  const doSendMessage = async (messages: MessageListItem[]) => {
+    stopRef.current = false;
     const body: MessageRequestBody = { messages, model: currentModel };
-    //当前消息 添加到消息列表
 
     setMessageText("");
 
@@ -77,15 +96,18 @@ export default function ChatInput() {
       return;
     }
 
-    /**
-     * 成功之后
-     */
-    // 服务端消息添加消息列表
-    const responseMessage: MessageListItem = {
-      id: uuidv4(),
+    const responseMessage: MessageListItem = await createOrUpdateMessage({
+      id: "",
       role: "assistant",
       content: "",
-    };
+      chatId: chatIdRef.current,
+    });
+
+    if (!responseMessage) {
+      controller.abort();
+      return;
+    }
+
     dispatch({ type: ActionType.ADD_MESSAGE, message: responseMessage });
     dispatch({
       type: ActionType.UPDATA,
@@ -152,7 +174,7 @@ export default function ChatInput() {
               icon={MdRefresh}
               variant="primary"
               className="font-medium"
-              onClick={reSend}
+              onClick={() => reSend()}
             >
               重新生成
             </Button>
@@ -175,7 +197,7 @@ export default function ChatInput() {
             className="mx-3 rounded-lg"
             icon={FiSend}
             variant="primary"
-            onClick={senhdMessage}
+            onClick={() => sendMessage()}
             disabled={messageText.trim() === "" || streamingId !== ""}
           />
         </div>{" "}
