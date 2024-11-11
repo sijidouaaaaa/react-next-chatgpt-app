@@ -1,4 +1,4 @@
-import { MessageListItem } from "@/types/chat";
+import { MessageListItem, Chat } from "@/types/chat";
 
 export type StateType = {
   displayNavigation: boolean; //显示导航栏
@@ -6,6 +6,7 @@ export type StateType = {
   currentModel: string;
   messageList: MessageListItem[];
   streamingId: string; //目前回复消息的id
+  selectedChat?: Chat; //选中的会话
 };
 
 export enum ActionType {

@@ -10,6 +10,16 @@ export async function POST(request: NextRequest) {
       },
     });
     data.chatId = chat.id;
+  } else {
+    // 更新对话更新时间
+    await prisma.chat.update({
+      data: {
+        updateTime: new Date(),
+      },
+      where: {
+        id: data.chatId,
+      },
+    });
   }
   //  upsert 创建或者更新数据
   const message = await prisma.message.upsert({

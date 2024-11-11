@@ -1,95 +1,55 @@
 import { groupByDate } from "@/common/util";
 import { Chat } from "@/types/chat";
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useRef, useState } from "react";
 import ChatItem from "./ChatItem";
 import { useEventBusContext } from "@/components/EventBusContext";
+import { useAppContext } from "@/components/AppContext";
+import { ActionType } from "@/reducers/AppReducer";
 
 export default function ChatList() {
-  const [chatList, setChatList] = useState<Chat[]>([
-    {
-      id: "1",
-      title: "React入门实战教程",
-      updateTime: Date.now(),
-    },
-    {
-      id: "2",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "3",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "4",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "5",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "6",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "7",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "8",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "9",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "10",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "11",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "12",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "13",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-    {
-      id: "14",
-      title: "如何使用Next.js创建React项目",
-      updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
-    },
-  ]);
-  // 判断是否是当前选中的对话
-  const [selectedChat, setSelectedChat] = useState<Chat>();
+  const [chatList, setChatList] = useState<Chat[]>([]);
+
+  const pageRef = useRef(1); //分页
 
   const groupList = useMemo(() => {
     return groupByDate(chatList);
   }, [chatList]);
-
+  // 判断是否是当前选中的对话
+  const {
+    state: { selectedChat },
+    dispatch,
+  } = useAppContext();
   // 监听事件
   const { subscribe, unsubscribe } = useEventBusContext();
 
+  const getData = async () => {
+    const res = await fetch(`/api/chat/list?page=${pageRef.current}`, {
+      method: "GET",
+    });
+    if (!res.ok) {
+      console.log(res.statusText);
+      return;
+    }
+
+    const { data } = await res.json();
+
+    // 第一页数据直接覆盖，其他页面追加到末尾
+    if (pageRef.current === 1) {
+      setChatList(data.list);
+    } else {
+      setChatList((list) => list.concat(data.list));
+    }
+  };
+  // 首次加载数据
   useEffect(() => {
+    getData();
+  }, []);
+
+  useEffect(() => {
+    // 收到事件通知到时候
     const callback: EventListener = () => {
-      console.log("fetchChatList");
+      pageRef.current = 1;
+      getData();
     };
     subscribe("fetchChatList", callback);
     // 卸载
@@ -112,7 +72,13 @@ export default function ChatList() {
                     key={item.id}
                     isSelected={isSelected}
                     item={item}
-                    onSelected={(chat) => setSelectedChat(chat)}
+                    onSelected={(chat) =>
+                      dispatch({
+                        type: ActionType.UPDATA,
+                        field: "selectedChat",
+                        value: chat,
+                      })
+                    }
                   />
                 );
               })}
