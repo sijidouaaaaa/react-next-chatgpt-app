@@ -75,11 +75,6 @@ export default function ChatList() {
       title: "如何使用Next.js创建React项目",
       updateTime: Date.now() - 1000 * 60 * 60 * 24 * 2,
     },
-    {
-      id: "15",
-      title: "知行小课",
-      updateTime: Date.now() + 2,
-    },
   ]);
   // 判断是否是当前选中的对话
   const [selectedChat, setSelectedChat] = useState<Chat>();
