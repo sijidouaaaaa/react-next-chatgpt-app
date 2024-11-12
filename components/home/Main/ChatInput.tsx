@@ -4,7 +4,7 @@ import { useEventBusContext } from "@/components/EventBusContext";
 import { ActionType } from "@/reducers/AppReducer";
 import { MessageListItem, MessageRequestBody } from "@/types/chat";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiSend } from "react-icons/fi";
 import { MdRefresh } from "react-icons/md";
 import { PiLightningFill, PiStopBold } from "react-icons/pi";
@@ -14,7 +14,7 @@ export default function ChatInput() {
   const [messageText, setMessageText] = useState(""); // 输入框内容
   // 获取当前聊天记录
   const {
-    state: { messageList, currentModel, streamingId },
+    state: { messageList, currentModel, streamingId, selectedChat },
     dispatch,
   } = useAppContext();
 
@@ -22,6 +22,16 @@ export default function ChatInput() {
   const chatIdRef = useRef("");
 
   const { publish } = useEventBusContext();
+
+  useEffect(() => {
+    // 当前会话id等于选择的会话id
+    if (chatIdRef.current === selectedChat?.id) {
+      return;
+    }
+    chatIdRef.current = selectedChat?.id ?? "";
+    stopRef.current = true;
+  }, [selectedChat]);
+
   // 创建或更新消息
   async function createOrUpdateMessage(message: MessageListItem) {
     const response = await fetch("/api/message/update", {
@@ -40,6 +50,13 @@ export default function ChatInput() {
     if (!chatIdRef.current) {
       chatIdRef.current = data.message.chatId;
       publish("fetchChatList");
+
+      // 更新全局对话中当前选择的对话id
+      dispatch({
+        type: ActionType.UPDATA,
+        field: "selectedChat",
+        value: { id: chatIdRef.current },
+      });
     }
     return data.message;
   }
@@ -99,7 +116,9 @@ export default function ChatInput() {
    * 发送消息
    */
   const doSendMessage = async (messages: MessageListItem[]) => {
+    // 重置标识位
     stopRef.current = false;
+
     const body: MessageRequestBody = { messages, model: currentModel };
 
     setMessageText("");
@@ -153,8 +172,6 @@ export default function ChatInput() {
     while (!done) {
       // 停止生成内容
       if (stopRef.current) {
-        // 重置标识位
-        stopRef.current = false;
         // 终止网络请求
         controller.abort();
         break;
