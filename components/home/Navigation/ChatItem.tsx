@@ -1,4 +1,5 @@
 import Button from "@/components/common/Button";
+import { useEventBusContext } from "@/components/EventBusContext";
 import { Chat } from "@/types/chat";
 
 import { useEffect, useState } from "react";
@@ -17,10 +18,34 @@ export default function ChatItem(props: IChatItemProps) {
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  const [title, setTitle] = useState(item.title);
+  const { publish } = useEventBusContext();
+
   // 监听是否被选中，如果是，就取消编辑
   useEffect(() => {
     setEditing(false);
   }, [isSelected]);
+
+  const updateChat = async () => {
+    const res = await fetch("/api/chat/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: item.id,
+        title,
+      }),
+    });
+    if (!res.ok) {
+      console.log(res.statusText);
+      return;
+    }
+    const { code } = await res.json();
+    if (code === 0) {
+      publish("fetchChatList");
+    }
+  };
 
   return (
     <li
@@ -38,11 +63,14 @@ export default function ChatItem(props: IChatItemProps) {
         <input
           autoFocus={true} // 自动聚焦
           className="flex-1 min-w-0 bg-transparent outline-none"
-          defaultValue={item.title}
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+          }}
         />
       ) : (
         <span className="relative flex-1 whitespace-nowrap overflow-hidden">
-          {item.title}
+          {title}
           {/* 固定在标题右边 */}
           <span
             className={`group-hover:from-gray-800 absolute right-0 inset-y-0 w-8 bg-gradient-to-l ${
@@ -64,7 +92,7 @@ export default function ChatItem(props: IChatItemProps) {
                     console.log("删除");
                   } else {
                     // 编辑
-                    console.log("编辑");
+                    updateChat();
                   }
                   setDeleting(false);
                   setEditing(false);

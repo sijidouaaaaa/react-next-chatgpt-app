@@ -41,8 +41,7 @@ export default function ChatList() {
       loadingRef.current = false;
       return;
     }
-    // 页码递增
-    pageRef.current++;
+
     const { data } = await res.json();
     console.log("getData", data);
 
@@ -55,6 +54,8 @@ export default function ChatList() {
     } else {
       setChatList((list) => list.concat(data.list));
     }
+    // 页码递增
+    pageRef.current++;
     loadingRef.current = false;
   };
 
