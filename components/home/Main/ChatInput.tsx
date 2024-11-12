@@ -62,7 +62,7 @@ export default function ChatInput() {
   }
   // 删除消息(重新生成消息的时候)
   async function delectMessage(id: string) {
-    const response = await fetch(`/api/message/delect?id${id}`, {
+    const response = await fetch(`/api/message/delete?id${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

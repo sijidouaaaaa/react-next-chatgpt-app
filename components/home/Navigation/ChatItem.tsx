@@ -1,5 +1,6 @@
-import Button from "@/components/common/Button";
+import { useAppContext } from "@/components/AppContext";
 import { useEventBusContext } from "@/components/EventBusContext";
+import { ActionType } from "@/reducers/AppReducer";
 import { Chat } from "@/types/chat";
 
 import { useEffect, useState } from "react";
@@ -21,6 +22,7 @@ export default function ChatItem(props: IChatItemProps) {
   const [title, setTitle] = useState(item.title);
   const { publish } = useEventBusContext();
 
+  const { dispatch } = useAppContext();
   // 监听是否被选中，如果是，就取消编辑
   useEffect(() => {
     setEditing(false);
@@ -46,13 +48,35 @@ export default function ChatItem(props: IChatItemProps) {
       publish("fetchChatList");
     }
   };
+  const deleteChat = async () => {
+    console.log("deleteChat");
+
+    const res = await fetch(`/api/chat/delete?id=${item.id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) {
+      console.log(res.statusText);
+      return;
+    }
+    const { code } = await res.json();
+    if (code === 0) {
+      publish("fetchChatList");
+      dispatch({
+        type: ActionType.UPDATA,
+        field: "selectedChat",
+        value: null,
+      });
+    }
+  };
 
   return (
     <li
-      key={item.id}
       onClick={() => onSelected(item)}
       className={`relative group flex items-center p-3 space-x-3 cursor-pointer rounded-md hover:bg-gray-800 ${
-        isSelected ? "bg-gray-800" : ""
+        isSelected ? "bg-gray-800 pr-[3.5em]" : ""
       }`}
     >
       {/* 标题前的图标 */}
@@ -84,14 +108,12 @@ export default function ChatItem(props: IChatItemProps) {
         <span className="absolute right-1 flex">
           {editing || deleting ? (
             <>
-              <Button
+              <button
                 className="p-1 hover:text-white"
                 onClick={(e) => {
                   if (deleting) {
-                    // 删除
-                    console.log("删除");
+                    deleteChat();
                   } else {
-                    // 编辑
                     updateChat();
                   }
                   setDeleting(false);
@@ -100,8 +122,8 @@ export default function ChatItem(props: IChatItemProps) {
                 }}
               >
                 <MdCheck />
-              </Button>
-              <Button
+              </button>
+              <button
                 className="p-1 hover:text-white"
                 onClick={(e) => {
                   setDeleting(false);
@@ -110,28 +132,28 @@ export default function ChatItem(props: IChatItemProps) {
                 }}
               >
                 <MdClose />
-              </Button>
+              </button>
             </>
           ) : (
             <>
-              <Button
+              <button
                 className="p-1 hover:text-white"
                 onClick={(e) => {
                   setEditing(true);
                   e.stopPropagation(); // 防止li触发点击事件
                 }}
               >
-                <AiOutlineEdit />
-              </Button>
-              <Button
+                ddd <AiOutlineEdit />
+              </button>
+              <button
                 className="p-1 hover:text-white"
                 onClick={(e) => {
                   setDeleting(true);
                   e.stopPropagation(); // 防止li触发点击事件
                 }}
               >
-                <MdDeleteOutline />
-              </Button>
+                aa <MdDeleteOutline />
+              </button>
             </>
           )}
         </span>
