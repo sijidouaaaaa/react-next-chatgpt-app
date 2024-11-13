@@ -1,8 +1,11 @@
 import { groupByDate } from "@/common/util";
 import { Chat } from "@/types/chat";
-import { use, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ChatItem from "./ChatItem";
-import { useEventBusContext } from "@/components/EventBusContext";
+import {
+  useEventBusContext,
+  EventListener,
+} from "@/components/EventBusContext";
 import { useAppContext } from "@/components/AppContext";
 import { ActionType } from "@/reducers/AppReducer";
 

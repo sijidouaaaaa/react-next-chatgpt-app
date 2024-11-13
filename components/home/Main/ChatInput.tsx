@@ -1,6 +1,9 @@
 import { useAppContext } from "@/components/AppContext";
 import Button from "@/components/common/Button";
-import { useEventBusContext } from "@/components/EventBusContext";
+import {
+  useEventBusContext,
+  EventListener,
+} from "@/components/EventBusContext";
 import { ActionType } from "@/reducers/AppReducer";
 import { MessageListItem, MessageRequestBody } from "@/types/chat";
 
@@ -21,7 +24,17 @@ export default function ChatInput() {
   const stopRef = useRef(false);
   const chatIdRef = useRef("");
 
-  const { publish } = useEventBusContext();
+  const { publish, subscribe, unsubscribe } = useEventBusContext();
+
+  useEffect(() => {
+    // 收到事件通知到时候
+    const callback: EventListener = (data) => {
+      sendMessage(data);
+    };
+    subscribe("createNewChat", callback);
+    // 卸载
+    return () => unsubscribe("createNewChat", callback);
+  }, []);
 
   useEffect(() => {
     // 当前会话id等于选择的会话id
@@ -76,11 +89,11 @@ export default function ChatInput() {
     // 删除成功
     return code === 0;
   }
-  const sendMessage = async () => {
+  const sendMessage = async (content: string) => {
     const message = await createOrUpdateMessage({
       id: "",
       role: "user",
-      content: messageText,
+      content,
       chatId: chatIdRef.current,
     });
     dispatch({ type: ActionType.ADD_MESSAGE, message });
@@ -244,7 +257,7 @@ export default function ChatInput() {
             className="mx-3 rounded-lg"
             icon={FiSend}
             variant="primary"
-            onClick={() => sendMessage()}
+            onClick={() => sendMessage(messageText)}
             disabled={messageText.trim() === "" || streamingId !== ""}
           />
         </div>{" "}

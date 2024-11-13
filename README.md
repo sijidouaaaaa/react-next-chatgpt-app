@@ -76,3 +76,10 @@ npm i @prisma/client
 npx prisma generate
 
 npx prisma studio
+
+<!-- 安装azure openai -->
+
+npm azure openai
+https://www.npmjs.com/package/@azure/openai
+
+注册账号，然后进行免费使用，目前为实现

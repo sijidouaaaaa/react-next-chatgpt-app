@@ -143,7 +143,7 @@ export default function ChatItem(props: IChatItemProps) {
                   e.stopPropagation(); // 防止li触发点击事件
                 }}
               >
-                ddd <AiOutlineEdit />
+                <AiOutlineEdit />
               </button>
               <button
                 className="p-1 hover:text-white"
@@ -152,7 +152,7 @@ export default function ChatItem(props: IChatItemProps) {
                   e.stopPropagation(); // 防止li触发点击事件
                 }}
               >
-                aa <MdDeleteOutline />
+                <MdDeleteOutline />
               </button>
             </>
           )}
